@@ -12,3 +12,10 @@ __pycache__/
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
+
+# PyTorch model files
+*.pt
+*.pth
+
+# Keep the final model (optional)
+!models/best_model.pt
