@@ -1,17 +1,14 @@
+import json
 import os
 import re
 import torch
 import torch.nn as nn
-from PIL import Image, ImageOps
+from PIL import ImageOps
 from torchvision import models, transforms
 
-CLASSES = [
-    "FreshApple", "FreshBanana", "FreshGrape", "FreshGuava",
-    "FreshJujube", "FreshOrange", "FreshPomegranate", "FreshStrawberry",
-    "RottenApple", "RottenBanana", "RottenGrape", "RottenGuava",
-    "RottenJujube", "RottenOrange", "RottenPomegranate", "RottenStrawberry",
-]
-WEIGHTS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "resnet18_fruit.pt")
+HERE = os.path.dirname(os.path.abspath(__file__))
+CLASSES = json.load(open(os.path.join(HERE, "classes.json")))
+WEIGHTS = os.path.join(HERE, "resnet18_fruit17.pt")
 CONFIDENCE_THRESHOLD = 0.60   # below this, the app says "not sure"
 
 device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
@@ -39,7 +36,7 @@ def pretty(name):
 
 
 def predict(img):
-    img = ImageOps.exif_transpose(img).convert("RGB")     # fixes sideways phone photos
+    img = ImageOps.exif_transpose(img).convert("RGB")
     x = transform(img).unsqueeze(0).to(device)
     with torch.no_grad():
         probs = model(x).softmax(1)[0].cpu()
@@ -48,7 +45,9 @@ def predict(img):
     conf, idx = probs.max(0)
     conf, name = conf.item(), CLASSES[idx.item()]
 
-    if conf < CONFIDENCE_THRESHOLD:
+    if name == "NotFruit":
+        verdict = f"This doesn't look like a fruit ({conf:.0%})."
+    elif conf < CONFIDENCE_THRESHOLD:
         verdict = f"Not sure ({conf:.0%} for {pretty(name)}). Try a closer photo of a single fruit."
     else:
         verdict = f"{pretty(name)} ({conf:.0%})"
