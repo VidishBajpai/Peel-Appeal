@@ -19,3 +19,8 @@ __pycache__/
 
 # Keep the final model (optional)
 !models/best_model.pt
+
+flagged/
+*.tgz
+notebooks/*.pt
+app/resnet18_fruit.pt
