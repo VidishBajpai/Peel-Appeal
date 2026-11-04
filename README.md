@@ -36,7 +36,3 @@ The 17-class model uses a different split, so its number is comparable but not i
 ## Run it
     pip install -r requirements.txt
     cd app && python app.py
-
-## Credits
-Dataset: [add title, authors and license from the Mendeley page].
-NotFruit images: Imagenette (fast.ai) [check license].
